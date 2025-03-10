@@ -1,0 +1,65 @@
+import subprocess
+
+def show_help():
+    help_text = """
+Available commands:
+/help      - Show this help message
+/exit      - Exit the program
+/firewall  - Manage the Windows firewall (disable/enable/status)
+"""
+    print(help_text)
+
+banner = """  
+___   ___   _________  ______     ___   ___   ________   ______    ______    ______   __       ______                                                    
+/__/\ /__/\ /________/\/_____/\   /__/\ /__/\ /_______/\ /_____/\  /_____/\  /_____/\ /_/\     /_____/\                                                   
+\::\ \\  \ \\__.::.__\/\:::_ \ \  \::\ \\  \ \\::: _  \ \\:::_ \ \ \:::_ \ \ \:::_ \ \\:\ \    \:::_ \ \                                                  
+ \::\/_\ .\ \  \::\ \   \:(_) \ \  \::\/_\ .\ \\::(_)  \ \\:(_) ) )_\:(_) ) )_\:\ \ \ \\:\ \    \:\ \ \ \                                                  
+  \:: ___::\ \  \::\ \   \: ___\/   \:: ___::\ \\:: __  \ \\: __ `\ \\: __ `\ \\:\ \ \ \\:\ \____\:\ \ \ \                                                 
+   \: \ \\::\ \  \::\ \   \ \ \      \: \ \\::\ \\:.\ \  \ \\ \ `\ \ \\ \ `\ \ \\:\_\ \ \\:\/___/\\:\/.:| |                                                
+    \__\/ \::\/   \__\/    \_\/       \__\/ \::\/ \__\/\__\/ \_\/ \_\/ \_\/ \_\/ \_____\/ \_____\/ \____/_/                                               
+
+                          Made by: Anas, Peter, Klaas
+"""
+
+print(banner)
+show_help()
+
+def manage_firewall(action):
+    # PowerShell-commando's voor firewallbeheer
+    powershell_commands = {
+        "disable": "Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False",
+        "enable": "Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True",
+        "status": "Get-NetFirewallProfile | Select-Object Name, Enabled"
+    }
+
+    if action not in powershell_commands:
+        print("Ongeldige actie! Gebruik: 'enable', 'disable' of 'status'.")
+        return
+
+    command = f"powershell -Command \"{powershell_commands[action]}\""
+    
+    try:
+        # Voer het PowerShell-commando uit en vang de uitvoer op
+        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            print(result.stdout)
+        else:
+            print(f"Fout bij het uitvoeren van het commando: {result.stderr}")
+    except Exception as e:
+        print(f"Er is een fout opgetreden bij het uitvoeren van het commando: {e}")
+
+while True:
+    command = input("Enter command: ").strip().lower()
+    
+    if command == "/help":
+        show_help()
+    elif command == "/exit":
+        print("Exiting program...")
+        break
+    elif command == "/firewall":
+        # Vraag de gebruiker om een actie voor de firewall
+        action = input("Enter action (disable, enable, status): ").strip().lower()
+        manage_firewall(action)
+    else:
+        print("Unknown command. Type /help for available commands.")
