@@ -4,3 +4,7 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Scr
 test
 Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging"
 
+
+
+auditpol /set /subcategory:"Process Creation" /success:enable /failure:enable
+
